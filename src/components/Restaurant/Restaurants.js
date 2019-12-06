@@ -1,6 +1,7 @@
-import React from 'react';
-import './Restaurants.css';
-import { TextField, Button } from '@material-ui/core';
+import React from "react";
+import "./Restaurants.css";
+import { TextField, Button } from "@material-ui/core";
+import restaurantsData from './RestaurantData';
 
 function RestaurantList({ restaurants }) {
   return restaurants.map(restaurant => {
@@ -8,18 +9,23 @@ function RestaurantList({ restaurants }) {
       <div
         key={restaurant.id}
         style={{
-          margin: '10px 0',
-          padding: '5px',
-          borderRadius: '5px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
+          display: "flex",
+          flexDirection: "row",
+          margin: "10px 20px",
+          padding: "5px",
+          borderRadius: "5px",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)"
         }}
       >
-        <div
-          style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '20px 0' }}
-        >
-          {restaurant.title}
+      <img src={restaurant.image} alt="Logo" width={140} height={140} />
+        <div style={{ diplay: "flex", flexDirection: "column", marginLeft: '20px' }}>
+          <div
+            style={{ fontSize: "1.5rem", fontWeight: "bold", margin: "20px 0" }}
+          >
+            {restaurant.name}
+          </div>
+          <div>{restaurant.address}</div>
         </div>
-        <div>{restaurant.body}</div>
       </div>
     );
   });
@@ -29,70 +35,47 @@ class Restaurants extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: []
+      restaurants: [],
+      query: ""
     };
   }
 
-  getPosts = async () => {
-    return fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myJson) {
-        return myJson;
-      });
-  };
-
-  async componentDidMount() {
-    const newPosts = await this.getPosts();
+  onChangeHandle = value => {
+    const foundRestaurants = restaurantsData.filter(restaurant =>
+      restaurant.name.toLowerCase().includes(value.toLowerCase())
+    );
     this.setState({
-      posts: newPosts
+      query: value,
+      restaurants: foundRestaurants
     });
-  }
-
-  onClickHandle = (email, password) => {
-    return fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(myJson) {
-        return myJson;
-      });
   };
 
   render() {
-    const { posts } = this.state;
+    const { restaurants, query } = this.state;
+
     return (
       <div className="rest-list">
-        <div
-          style={{ maxWidth: '20%', display: 'flex', flexDirection: 'column' }}
-        >
+        <div style={{ display: "flex", flexDirection: "row" }}>
           <TextField
-            style={{ margin: '10px' }}
+            style={{ margin: "10px" }}
             id="outlined-basic"
             label="Email"
             variant="outlined"
             margin="dense"
+            value={query}
+            onChange={e => this.onChangeHandle(e.target.value)}
           />
-          <TextField
-            style={{ margin: '10px' }}
-            id="outlined-basic"
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="dense"
-          />
-          <div style={{ display: 'flex', marginLeft: 'auto' }}>
+          <div style={{ display: "flex" }}>
             <Button
               variant="contained"
               color="primary"
               onClick={this.onClickHandle}
             >
-              Login
+              Buscar
             </Button>
           </div>
         </div>
-        <RestaurantList restaurants={posts} />
+        <RestaurantList restaurants={restaurants} />
       </div>
     );
   }
